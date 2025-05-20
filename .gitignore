@@ -172,3 +172,18 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# results
+results/
+debug/
+wandb/
+*.png
+*.wav
+*.ckpt
+*.txt
+*.npy
+
+# exceptions
+!data/example_wavs/*
+!results/*.png
+!requirements.txt

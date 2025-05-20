@@ -1,0 +1,10 @@
+datasets==3.4.0
+huggingface_hub==0.29.3
+lightning==2.5.0.post0
+matplotlib==3.10.3
+numpy==2.2.6
+scikit_learn==1.6.1
+torch==2.6.0
+torchaudio==2.6.0
+tqdm==4.67.1
+transformers==4.48.0
