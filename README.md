@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 ## Dataset
 
-The [MelodySim](https://huggingface.co/datasets/amaai-lab/melodySim) dataset contains 1710 valid synthesized pieces originated from Slakh2100 dataset, each containing 4 different versions (through various augmentation settings), with a total duration of 419 hours.
+The [MelodySim](https://huggingface.co/datasets/amaai-lab/melodySim) dataset contains 1,710 valid synthesized pieces originated from Slakh2100 dataset, each containing 4 different versions (through various augmentation settings), with a total duration of 419 hours.
 
 ## Training
 First, pre-compute the MERT features for the melodysim dataset:
@@ -63,7 +63,7 @@ Our testing results are as follows:
 If you find this work useful in your research, please cite:
 
 ```bibtex
-@article{lu2025melodysimmeasuringmelodyawaremusic,
+@article{lu2025melodysim,
   title={Text2midi-InferAlign: Improving Symbolic Music Generation with Inference-Time Alignment},
   author={Tongyu Lu and Charlotta-Marlena Geist and Jan Melechovsky and Abhinaba Roy and Dorien Herremans},
   year={2025},
