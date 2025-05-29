@@ -2,7 +2,7 @@
 
 # MelodySim
 
-[Model](https://huggingface.co/amaai-lab/MelodySim/tree/main) | [Paper](to-be-uploaded) | [Dataset](https://huggingface.co/datasets/amaai-lab/melodySim)
+[Model](https://huggingface.co/amaai-lab/MelodySim/tree/main) | [Paper](https://arxiv.org/pdf/2505.20979) | [Dataset](https://huggingface.co/datasets/amaai-lab/melodySim)
 
 MERT-based music audio plagiarism detection through music similarity.
 </div>
@@ -59,4 +59,14 @@ Our testing results are as follows:
 | Accuracy  |             |            | 0.97       |
 
 ## Citation
-To be updated
+
+If you find this work useful in your research, please cite:
+
+```bibtex
+@article{lu2025melodysimmeasuringmelodyawaremusic,
+  title={Text2midi-InferAlign: Improving Symbolic Music Generation with Inference-Time Alignment},
+  author={Tongyu Lu and Charlotta-Marlena Geist and Jan Melechovsky and Abhinaba Roy and Dorien Herremans},
+  year={2025},
+  journal={arXiv:2505.20979}
+}
+```
