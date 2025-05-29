@@ -1,6 +1,6 @@
 <div align="center">
 
-# MelodySim - Measuring Melody-aware Music Similarity for Plagiarism Detection
+# MelodySim: Measuring Melody-aware Music Similarity for Plagiarism Detection
 
 [Model](https://huggingface.co/amaai-lab/MelodySim/tree/main) | [Paper](https://arxiv.org/pdf/2505.20979) | [Dataset](https://huggingface.co/datasets/amaai-lab/melodySim)
 
