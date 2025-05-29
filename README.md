@@ -1,10 +1,11 @@
 <div align="center">
 
-# MelodySim
+# MelodySim - Measuring Melody-aware Music Similarity for Plagiarism Detection
 
 [Model](https://huggingface.co/amaai-lab/MelodySim/tree/main) | [Paper](https://arxiv.org/pdf/2505.20979) | [Dataset](https://huggingface.co/datasets/amaai-lab/melodySim)
 
-MERT-based music audio plagiarism detection through music similarity.
+We propose MelodySim, a melody-aware music similarity model and dataset for plagiarism detection. First, we introduce a novel method to construct a dataset with focus on melodic similarity. By augmenting Slakh2100; an existing MIDI dataset, we generate variations of each piece while preserving the melody through modifications such as note splitting, arpeggiation, minor track dropout (excluding bass), and re-instrumentation. A user study confirms that positive pairs indeed contain similar melodies, with other musical tracks significantly changed. Second, we develop a segment-wise melodic-similarity detection model that uses a MERT encoder and applies a triplet neural network to capture melodic similarity. The resultant decision matrix highlights where plagiarism might occur. Our model achieves high accuracy on the MelodySim test set.
+
 </div>
 
 ## Installation
