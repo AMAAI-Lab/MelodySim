@@ -108,65 +108,10 @@ For your own data, configure `data/augmentation/configs/slakh.local.yaml` using
 the [setup guide](data/augmentation/docs/augmentation-setup.md#7-run-your-dataset),
 then run `python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml`.
 
-### uv/venv (alternative)
-
-Use Python 3.12 in a separate environment. In PowerShell:
-
-```powershell
-uv venv --python 3.12 .venv-augmentation
-uv pip install --python .venv-augmentation/Scripts/python.exe -r requirements-augmentation.txt
-.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.create_augmentation_demo --run --workers 2
-```
-
-The demo writes MIDI variants and WAV clips to `data/augmentation/augmentation-demo/generated`.
-For Slakh, set `input_root`, `output_root`, and `soundfont` in a copy of
-`data/augmentation/configs/slakh.yaml` (relative paths resolve from the YAML file), then run:
-
-```powershell
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.yaml --dry-run
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.yaml --workers 2
-```
-
-On Linux/macOS, use `.venv-augmentation/bin/python` and install the FluidSynth shared
-library. See [the augmentation guide](data/augmentation/docs/augmentation.md) for MIDI-only input and other options.
-
-
-For a fresh machine, follow the [augmentation installation and troubleshooting guide](data/augmentation/docs/augmentation-setup.md)
-for conda or uv/venv, native FluidSynth, Musyng SoundFont acquisition/configuration, and self-checks.
-Run `python -m data.augmentation.tools.check_augmentation` with your augmentation environment's interpreter
-before processing your data.
-
-### Linux with uv/venv (alternative; Ubuntu/Debian)
-
-Run from the repository root. Use a separate Python 3.12 environment for augmentation:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y curl ca-certificates libfluidsynth3 libsndfile1
-
-curl -LsSf https://astral.sh/uv/install.sh | sh
-export PATH="$HOME/.local/bin:$PATH"
-uv python install 3.12
-uv venv --python 3.12 .venv-augmentation
-uv pip sync --python .venv-augmentation/bin/python requirements-augmentation.lock
-uv pip check --python .venv-augmentation/bin/python
-
-.venv-augmentation/bin/python -m data.augmentation.tools.check_augmentation
-.venv-augmentation/bin/python -m data.augmentation.tools.create_augmentation_demo --run --workers 2
-```
-
 The demo uses the bundled TimGM6mb SoundFont and needs no external dataset or
 Musyng download. Output is under `data/augmentation/augmentation-demo/generated`.
 
-For Slakh, copy `data/augmentation/configs/slakh.yaml` to
-`data/augmentation/configs/slakh.local.yaml`, then set `input_root`, `output_root`
-and `soundfont`. Relative paths resolve from the YAML file's directory. Run:
-
-```bash
-.venv-augmentation/bin/python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --dry-run
-.venv-augmentation/bin/python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --workers 2
-```
-
-See the [installation guide](data/augmentation/docs/augmentation-setup.md) for
-pip installation, Musyng acquisition and troubleshooting. Generation uses the
-FluidSynth shared library directly; no sound card or running audio server is needed.
+See the [setup guide](data/augmentation/docs/augmentation-setup.md) for Musyng
+acquisition, troubleshooting, and alternative uv/venv or pip installation methods.
+The [augmentation guide](data/augmentation/docs/augmentation.md) covers generation
+options and MIDI-only input.
