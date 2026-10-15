@@ -187,3 +187,11 @@ wandb/
 !data/example_wavs/*
 !results/*.png
 !requirements.txt
+!requirements-augmentation.txt
+
+# Generated augmentation datasets, local source assets and isolated runtime cache
+outputs/
+datasets/
+/assets/
+.venv-*/
+configs/augmentation/*.local.yaml

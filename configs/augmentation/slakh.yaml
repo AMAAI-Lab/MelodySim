@@ -1,0 +1,38 @@
+# Paths are relative to THIS file. Replace these with your local assets.
+input_root: ../../datasets/slakh2100_flac_redux
+output_root: ../../outputs/augmentation/slakh
+soundfont: ../../assets/Musyng.sf2
+original_mode: audio_mix
+midi_filename: all_src.mid
+audio_filename: mix.flac
+num_versions: 3
+seed: 2026
+
+midi:
+  keep_instrument_probability: 0.2
+  same_family_probability: 0.7
+  remove_track_probability: [0.1, 0.5]
+  remove_drums_probability: 0.5
+  note_split_probability: [0.3, 0.85]
+  chord_inversion_probability: [0.3, 0.85]
+  arpeggiation_probability: [0.3, 0.85]
+  protect_families: [piano, guitar, bass]
+  protect_vocals: true
+  split_melody_notes: true
+  onset_tolerance_seconds: 0.05
+
+audio:
+  sample_rate: 44100
+  window_seconds: 10.0
+  hop_seconds: 10.0
+  pitch_shift_semitones: 4
+  time_shift_seconds: 3.0
+  tempo_range: [0.9, 1.1]
+  # Preserve the independently sampled integer pitch shift when changing tempo.
+  # Set speed explicitly to reproduce the old pitch-coupled resampling behavior.
+  tempo_mode: stretch
+  tail_policy: drop
+
+synthesis:
+  gain: 0.2
+  tail_seconds: 0.5

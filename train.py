@@ -14,27 +14,16 @@ from typing import List, Tuple, Dict, Any, Union, Optional
 from config import config
 from model.module import LightningSiameseNet
 from data.dataloader import TripletDataset, create_triplet_dataloader
+from data.splits import feature_split_directories
 
 class MERTDataModule(L.LightningDataModule):
     def __init__(self, config: Dict, dataset_root_dir: str):
         super().__init__()
-        dataset_splits = os.listdir(dataset_root_dir)
-        assert "train" in dataset_splits and "test" in dataset_splits and "validation" in dataset_splits
-        datasets = [
-            TripletDataset(tracks_dir = os.path.join(dataset_root_dir, "train")),
-            TripletDataset(tracks_dir = os.path.join(dataset_root_dir, "validation")),
-            TripletDataset(tracks_dir = os.path.join(dataset_root_dir, "test")),
-        ]
-        dataset = torch.utils.data.ConcatDataset(datasets)
-        print(f"Loaded {len(dataset)} MERT embedding tracks for training")
-
-        assert config["train_split"] > 0 and config["train_split"] <= 1
-        train_size = int(len(dataset) * config["train_split"])
-        val_size = len(dataset) - train_size
-
+        directories = feature_split_directories(dataset_root_dir)
+        self.train_dataset = TripletDataset(tracks_dir=str(directories["train"]))
+        self.val_dataset = TripletDataset(tracks_dir=str(directories["validation"]))
         self.train_batch_size = config["train_batch_size"]
         self.num_workers = config["dataloader_num_workers"]
-        self.train_dataset, self.val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
     def train_dataloader(self):
         return create_triplet_dataloader(

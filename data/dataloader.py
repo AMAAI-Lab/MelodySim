@@ -64,6 +64,8 @@ class MelodySimDataset(Dataset):
         
         if len(audios.keys()) == 0:
             print(f"There is no version stored in track {track}")
+        if not audios or any(not samples for samples in audios.values()):
+            raise ValueError(f"Track {track} contains no usable WAV segments")
         min_frames = min([len(audios[version]) for version in audios.keys()])
         for version in audios.keys():
             audios[version] = audios[version][:min_frames]
@@ -123,15 +125,14 @@ def create_audio_dataloader(
         num_workers=num_workers, 
         shuffle=False,
         collate_fn=audio_collate_fn, 
-        persistent_workers=True
+        persistent_workers=num_workers > 0
     )
     return dataloader
 
 class MelodysimMERTDataset(Dataset):
     def __init__(self, tracks_dir: str, store_dict: bool = True, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.source = os.listdir(tracks_dir)
-        self.source = [s for s in self.source if (".ipynb" not in s and "__pycache__" not in s)]
+        self.source = [s for s in os.listdir(tracks_dir) if s.endswith(".npy") and os.path.isfile(os.path.join(tracks_dir, s))]
         self.source = sorted(self.source)
         self.tracks_dir = tracks_dir
         self.store_dict = store_dict
@@ -177,8 +178,11 @@ class TripletDataset(Dataset):
         *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
-        self.source = os.listdir(tracks_dir)
-        self.source = [s for s in self.source if (".ipynb" not in s and "__pycache__" not in s)]
+        self.source = sorted(s for s in os.listdir(tracks_dir) if s.endswith(".npy") and os.path.isfile(os.path.join(tracks_dir, s)))
+        if len(self.source) < 2:
+            raise ValueError("TripletDataset needs at least two source pieces for negative sampling")
+        if type(length_mult) is not int or length_mult < 1:
+            raise ValueError("length_mult must be a positive integer")
         self.tracks_dir = tracks_dir
         self.store_dict = store_dict
         if self.store_dict:
@@ -208,8 +212,8 @@ class TripletDataset(Dataset):
         assert len(self.source) > 1
         assert anchor_track.shape[0] > 1
 
-        anchor_idx = torch.randint(high=anchor_track.shape[0] - 1, size=()).item()
-        time_frame = torch.randint(high=anchor_track.shape[1] - 1, size=()).item()
+        anchor_idx = torch.randint(high=anchor_track.shape[0], size=()).item()
+        time_frame = torch.randint(high=anchor_track.shape[1], size=()).item()
         anchor_sample = anchor_track[anchor_idx][time_frame]
         
         positive_choices = [i for i in range(anchor_track.shape[0]) if i != anchor_idx]
@@ -223,8 +227,8 @@ class TripletDataset(Dataset):
             negative_track = self.track_dict[negative_trackname]
         else:
             negative_track = np.load(os.path.join(self.tracks_dir, negative_trackname))
-        negative_idx = torch.randint(high=negative_track.shape[0] - 1, size=()).item()
-        negative_sample = negative_track[negative_idx][torch.randint(high=negative_track.shape[1] - 1, size=()).item()]
+        negative_idx = torch.randint(high=negative_track.shape[0], size=()).item()
+        negative_sample = negative_track[negative_idx][torch.randint(high=negative_track.shape[1], size=()).item()]
 
         # concatenate hidden states
         num_layers, seq_len, embedding_size = anchor_sample.shape
@@ -262,4 +266,3 @@ def create_triplet_dataloader(
 ) -> DataLoader:
     loader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, shuffle=True, collate_fn=triplet_collate_fn)
     return loader
-    

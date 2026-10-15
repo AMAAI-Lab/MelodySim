@@ -1,0 +1,7 @@
+{
+  "origin": "swAIper-no-swiping/data_processing/classifier_model.pkl",
+  "sha256": "20808c5c4e4673dc78e16d5c050949453da149fb7e4ce8c236df58b2bf641b64",
+  "scikit_learn_version": "1.5.2",
+  "feature_schema": "legacy-18-v1",
+  "note": "Preserved research artifact. See docs/augmentation.md for feature compatibility."
+}

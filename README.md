@@ -21,6 +21,12 @@ pip install -r requirements.txt
 The [MelodySim](https://huggingface.co/datasets/amaai-lab/melodySim) dataset contains 1,710 valid synthesized pieces originated from Slakh2100 dataset, each containing 4 different versions (through various augmentation settings), with a total duration of 419 hours.
 
 ## Training
+To generate new MIDI/audio variants, see [the augmentation guide](docs/augmentation.md).
+The generation environment is separate from the model-training environment. A
+complete MIDI-to-WAV demonstration is available with
+`python -m tools.create_augmentation_demo --run` after installing
+`requirements-augmentation.txt`.
+
 First, pre-compute the MERT features for the melodysim dataset:
 ```
 python data/extract_mert.py -tracks-dir /path/to/melodysim/wav/dataset/train -out-dir /path/to/melodysim/mert/dataset/train
@@ -71,3 +77,32 @@ If you find this work useful in your research, please cite:
   journal={arXiv:2505.20979}
 }
 ```
+
+
+## Augmentation
+
+Use Python 3.12 in a separate environment. In PowerShell:
+
+```powershell
+uv venv --python 3.12 .venv-augmentation
+uv pip install --python .venv-augmentation/Scripts/python.exe -r requirements-augmentation.txt
+.venv-augmentation/Scripts/python.exe -m tools.create_augmentation_demo --run --workers 2
+```
+
+The demo writes MIDI variants and WAV clips to `outputs/augmentation-demo/generated`.
+For Slakh, set `input_root`, `output_root`, and `soundfont` in a copy of
+`configs/augmentation/slakh.yaml` (relative paths resolve from the YAML file), then run:
+
+```powershell
+.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config configs/augmentation/slakh.yaml --dry-run
+.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config configs/augmentation/slakh.yaml --workers 2
+```
+
+On Linux/macOS, use `.venv-augmentation/bin/python` and install the FluidSynth shared
+library. See [the augmentation guide](docs/augmentation.md) for MIDI-only input and other options.
+
+
+For a fresh machine, follow the [augmentation installation and troubleshooting guide](docs/augmentation-setup.md)
+for uv/pip, native FluidSynth, Musyng SoundFont acquisition/configuration, and self-checks.
+Run `python -m tools.check_augmentation` with your augmentation environment's interpreter
+before processing your data.
