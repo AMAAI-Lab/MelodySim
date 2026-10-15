@@ -81,6 +81,35 @@ If you find this work useful in your research, please cite:
 
 ## Augmentation
 
+### Conda (recommended)
+
+Use a separate Python 3.12 environment. Install [Miniforge](https://conda-forge.org/download/)
+if conda is unavailable. On Ubuntu/Debian, first install the native libraries:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y libfluidsynth3 libsndfile1
+```
+
+Windows uses the FluidSynth DLLs bundled with `sf2-loader`; macOS native-library
+instructions are in the [setup guide](data/augmentation/docs/augmentation-setup.md).
+From the repository root, run these commands in a conda-enabled terminal on any platform:
+
+```bash
+conda create -n melodysim-augmentation --override-channels -c conda-forge python=3.12 pip -y
+conda activate melodysim-augmentation
+python -m pip install -r requirements-augmentation.lock
+python -m pip check
+python -m data.augmentation.tools.check_augmentation
+python -m data.augmentation.tools.create_augmentation_demo --run --workers 2
+```
+
+For your own data, configure `data/augmentation/configs/slakh.local.yaml` using
+the [setup guide](data/augmentation/docs/augmentation-setup.md#7-run-your-dataset),
+then run `python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml`.
+
+### uv/venv (alternative)
+
 Use Python 3.12 in a separate environment. In PowerShell:
 
 ```powershell
@@ -103,11 +132,11 @@ library. See [the augmentation guide](data/augmentation/docs/augmentation.md) fo
 
 
 For a fresh machine, follow the [augmentation installation and troubleshooting guide](data/augmentation/docs/augmentation-setup.md)
-for uv/pip, native FluidSynth, Musyng SoundFont acquisition/configuration, and self-checks.
+for conda or uv/venv, native FluidSynth, Musyng SoundFont acquisition/configuration, and self-checks.
 Run `python -m data.augmentation.tools.check_augmentation` with your augmentation environment's interpreter
 before processing your data.
 
-### Linux (Ubuntu/Debian)
+### Linux with uv/venv (alternative; Ubuntu/Debian)
 
 Run from the repository root. Use a separate Python 3.12 environment for augmentation:
 

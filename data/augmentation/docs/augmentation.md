@@ -9,7 +9,7 @@ MelodySim dataset. The old server's source assets and random states are lost.
 ## Install and run a complete demonstration
 
 For a new machine, follow [the installation and troubleshooting guide](augmentation-setup.md).
-It covers uv and pip, native FluidSynth, Musyng acquisition/extraction, SoundFont
+It covers conda (recommended), uv/venv alternatives, native FluidSynth, Musyng acquisition/extraction, SoundFont
 configuration, and an executable self-check. Commands below assume that environment
 is installed; use its Python executable rather than the model-training environment.
 
@@ -17,17 +17,19 @@ Use a separate Python 3.12 environment. The bundled melody classifier was traine
 with scikit-learn 1.5.2; the model-training requirements currently pin a different
 version. Do not install the two requirements files together in the same environment.
 
-```powershell
-uv venv --python 3.12 .venv-augmentation
-uv pip sync --python .venv-augmentation/Scripts/python.exe requirements-augmentation.lock
-.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.create_augmentation_demo --run --workers 2
+After installing the conda environment using that guide:
+
+```sh
+conda activate melodysim-augmentation
+python -m data.augmentation.tools.check_augmentation
+python -m data.augmentation.tools.create_augmentation_demo --run --workers 2
 ```
 
-On Linux/macOS use `.venv-augmentation/bin/python` and install the system FluidSynth shared
-library (for example `libfluidsynth3` on Debian/Ubuntu). Windows DLLs are supplied
-by `sf2-loader`. No sound card is required. The locked package set used for
-validation is in `requirements-augmentation.lock` and can be installed with
-`uv pip sync --python <venv-python> requirements-augmentation.lock`.
+Conda provides Python and pip; Linux/macOS still need the native FluidSynth library
+described in the setup guide. Windows DLLs are supplied by `sf2-loader`. No sound
+card is required. The locked package set used for validation is in
+`requirements-augmentation.lock`. With the alternative venv setup, invoke the
+environment's Python explicitly instead of `python` in the commands below.
 
 The demo creates six original toy compositions, two per split, and renders their
 originals plus three variants using **TimGM6mb.sf2 bundled with pretty_midi**.
@@ -198,17 +200,21 @@ frame, including a piece with exactly one frame.
 
 ## Validation
 
-```powershell
-uv pip install --python .venv-augmentation/Scripts/python.exe pytest
-.venv-augmentation/Scripts/python.exe -m pytest data/augmentation/tests -q --basetemp=.cache/pytest
+The locked environment already includes pytest. With the conda environment active:
+
+```sh
+python -m pytest data/augmentation/tests -q --basetemp=.cache/pytest
 ```
 
 Two additional model-loader boundary tests run when torch and torchaudio are
 installed. They were also validated using the official CPU wheels:
 
-```powershell
-uv pip install --python .venv-augmentation/Scripts/python.exe torch==2.6.0 torchaudio==2.6.0 --index https://download.pytorch.org/whl/cpu
+```sh
+python -m pip install torch==2.6.0 torchaudio==2.6.0 --index-url https://download.pytorch.org/whl/cpu
 ```
+
+With torch available, `python -m pytest -q --basetemp=.cache/pytest` also runs the
+model aggregation regressions in `model/tests/`, including unequal window counts.
 
 Integration tests render actual MIDI with a real SoundFont, exercise source audio
 resampling, short-piece padding, corruption repair, replay, and verify identical

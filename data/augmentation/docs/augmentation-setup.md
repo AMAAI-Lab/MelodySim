@@ -6,11 +6,12 @@ Use a dedicated **64-bit CPython 3.12** environment. A GPU, MERT weights, an aud
 device, and the model-training requirements are not needed for generation.
 
 - [System libraries](#1-system-libraries)
-- [Install with uv](#2-install-with-uv-recommended)
-- [Install with pip](#3-install-with-pip-alternative)
-- [Self-check and complete demo](#4-self-check-and-complete-demo)
-- [Acquire and configure Musyng](#5-acquire-and-configure-musyng)
-- [Run your dataset](#6-run-your-dataset)
+- [Install with conda](#2-install-with-conda-recommended)
+- [Install with uv/venv](#3-install-with-uvvenv-alternative)
+- [Install with standard venv/pip](#4-install-with-standard-venvpip-alternative)
+- [Self-check and complete demo](#5-self-check-and-complete-demo)
+- [Acquire and configure Musyng](#6-acquire-and-configure-musyng)
+- [Run your dataset](#7-run-your-dataset)
 - [Troubleshooting](#troubleshooting)
 - [Validation and release contents](#validation-and-release-contents)
 
@@ -26,6 +27,9 @@ cd MelodySim
 There are three separate dependencies: Python packages, the **FluidSynth native
 library** that synthesizes audio, and a **SoundFont `.sf2` data file** containing
 instrument samples. Installing a Python binding does not install Musyng.
+The recommended conda route manages Python and pip; install the native libraries
+below on Linux/macOS. Windows uses the bundled DLLs. A conda environment alone
+does not supply those system libraries or a SoundFont.
 
 ### Windows 10/11, x64
 
@@ -71,7 +75,66 @@ is optional for this generation path**, even though the upstream musicpy/pydub
 stack can warn about its absence. MP3 conversion and model inference have separate
 requirements. No audio server or sound card needs to be configured.
 
-## 2. Install with uv (recommended)
+## 2. Install with conda (recommended)
+
+Install [Miniforge](https://conda-forge.org/download/) for your operating system
+if conda is not already available. An existing Miniconda/Anaconda installation
+also works; create a dedicated environment rather than modifying `base`.
+On Windows, download the x86-64 installer, install for your user and open the
+Miniforge Prompt (or the conda-enabled prompt from your existing installation).
+On Linux/macOS, a fresh user installation can be bootstrapped from the repository
+root with the official installer for your OS/architecture:
+
+```sh
+mkdir -p .cache/installers
+curl -fL "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" -o .cache/installers/miniforge.sh
+bash .cache/installers/miniforge.sh -b -p "$HOME/miniforge3"
+. "$HOME/miniforge3/etc/profile.d/conda.sh"
+```
+
+Skip the installer if you already have conda. To enable it automatically in later
+terminals, run `conda init bash` or `conda init zsh` for your shell and reopen the
+terminal. Then, from the repository root:
+
+```sh
+conda --version
+conda create -n melodysim-augmentation --override-channels -c conda-forge python=3.12 pip -y
+conda activate melodysim-augmentation
+python -m pip install -r requirements-augmentation.lock
+python -m pip check
+python -m data.augmentation.tools.check_augmentation
+python -m data.augmentation.tools.create_augmentation_demo --run --workers 2
+```
+
+The activated environment uses `python` on Windows, Linux and macOS; there is no
+`.venv-augmentation/Scripts` versus `.venv-augmentation/bin` distinction. No venv
+inside the conda environment is needed. `--override-channels -c conda-forge`
+selects the channel for this environment without changing global channel settings.
+Conda provides Python/pip, while pip installs the tested Python package snapshot,
+including scikit-learn 1.5.2 and setuptools below 81. Follow section 1 for native
+FluidSynth/SoundFile libraries and section 6 for Musyng.
+
+Install any required conda packages **before** the pip requirements. When changing
+the conda package set later, prefer a fresh environment, then reinstall the pip
+snapshot and run the self-check; see the official
+[conda/pip guidance](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html#using-pip-in-an-environment).
+Use `python -m pip` inside the activated environment, without `--user` or `sudo`.
+Keep the original model-training `requirements.txt` in a different environment.
+
+For a scheduler or shell without activation support, use `conda run` instead:
+
+```sh
+conda run --no-capture-output -n melodysim-augmentation python -m data.augmentation.tools.check_augmentation
+conda run --no-capture-output -n melodysim-augmentation python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --workers 2
+```
+
+The second command assumes your local dataset YAML is configured as in section 7.
+If an existing demo was generated in a different Python environment, choose a new
+demo root, for example `python -m data.augmentation.tools.create_augmentation_demo
+--root outputs/augmentation-demo-conda --run --workers 2`. Provenance changes
+correctly prevent silently reusing outputs from a different environment.
+
+## 3. Install with uv/venv (alternative)
 
 Install [uv using its official installer](https://docs.astral.sh/uv/getting-started/installation/).
 It can also [install Python 3.12](https://docs.astral.sh/uv/guides/install-python/),
@@ -133,7 +196,7 @@ bundled classifier and setuptools **below 81** for pretty_midi's `pkg_resources`
 import. The original `requirements.txt` serves model training/inference and pins a
 different scikit-learn version; install it in a different environment.
 
-## 3. Install with pip (alternative)
+## 4. Install with standard venv/pip (alternative)
 
 Start with a 64-bit CPython 3.12 installation that includes `venv` and `pip`, from
 [Python.org](https://www.python.org/downloads/) or your operating-system package
@@ -173,7 +236,7 @@ left over from training. To install only the direct runtime requirements, replac
 the lock filename with `requirements-augmentation.txt`; install pytest separately
 if running tests. See the official [venv documentation](https://docs.python.org/3.12/library/venv.html).
 
-## 4. Self-check and complete demo
+## 5. Self-check and complete demo
 
 The default self-check and demo use `TimGM6mb.sf2` bundled with pretty_midi 0.2.10.
 No external SoundFont download or Slakh data is required for this first run.
@@ -221,7 +284,7 @@ Rerunning verifies and skips matching complete tracks. The first librosa/Numba
 invocation can take longer while compilation caches are built. Start with
 `--workers 1` when diagnosing a problem.
 
-## 5. Acquire and configure Musyng
+## 6. Acquire and configure Musyng
 
 ### Choose the asset deliberately
 
@@ -281,14 +344,14 @@ demo; the pipeline cannot load an unextracted SFPACK archive. A MIDI.js
 PowerShell:
 
 ```powershell
-.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
+python -m data.augmentation.tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
 Get-FileHash -Algorithm SHA256 -LiteralPath assets/Musyng_Kite.sf2
 ```
 
 Linux/macOS:
 
 ```sh
-.venv-augmentation/bin/python -m data.augmentation.tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
+python -m data.augmentation.tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
 ```
 
 The report records SHA-256, preset coverage and the real synthesis result. Copy
@@ -300,7 +363,7 @@ notes and license/credits. Musyng Kite's author discusses its
 the repository's code license does not replace SoundFont terms. No external
 SoundFont or SFPACK executable is distributed in this repository.
 
-## 6. Run your dataset
+## 7. Run your dataset
 
 Copy the template to `data/augmentation/configs/slakh.local.yaml` (ignored by Git), then
 edit its paths. Keep the copy in the same directory for these relative paths:
@@ -335,16 +398,16 @@ audio, set `original_mode: synthesize`; this also renders the unmodified origina
 For a flat folder of MIDI files, additionally set `split: train` (or another
 intended split). In `audio_mix` mode, flat MIDI files need sibling `<stem>.wav`.
 
-PowerShell, after saving your local YAML:
+With the conda environment active, after saving your local YAML:
 
 ```powershell
-.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.check_augmentation --config data/augmentation/configs/slakh.local.yaml
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --dry-run
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --limit 1 --workers 1
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --workers 2
+python -m data.augmentation.tools.check_augmentation --config data/augmentation/configs/slakh.local.yaml
+python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --dry-run
+python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --limit 1 --workers 1
+python -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --workers 2
 ```
 
-Linux/macOS: use `.venv-augmentation/bin/python` in the same commands. `--dry-run`
+These commands also work on Linux/macOS with the conda environment active. `--dry-run`
 checks configuration, assets, input discovery and split isolation; the one-source
 run checks real generation. Check `dataset_manifest.json` for `status: complete`
 after the full run. Begin with one worker for a large SoundFont: every worker may
@@ -357,6 +420,9 @@ policies, replay, output layout, MERT integration and differences from the paper
 
 | Symptom | Resolution |
 | --- | --- |
+| `conda` is not recognized / command not found | Install Miniforge for your architecture, or open the conda-enabled prompt from your existing installation. On Linux/macOS initialize the shell using the installer instructions. |
+| `conda activate` says the shell is not initialized | Run `conda init bash`, `conda init zsh` or `conda init powershell` for your shell, then reopen the terminal. For batch jobs use `conda run --no-capture-output -n melodysim-augmentation python ...`. |
+| The wrong Python/package versions appear after switching environments | Run `conda activate melodysim-augmentation` and check `python -c "import sys; print(sys.executable)"`. Install with that Python's `-m pip`; do not nest a venv or use `--user`. |
 | `uv` is not recognized / command not found | Open a new terminal after installing; check the installation location reported by the official installer and add that directory to PATH. Alternatively use the pip route. |
 | `No module named pip` in a uv environment | Use `uv pip ... --python <env-python>` directly. To switch to pip, run `<env-python> -m ensurepip --upgrade` first. |
 | `ensurepip` / `venv` unavailable on Ubuntu | Install `python3.12-venv` for that interpreter, or use uv-managed Python. |
@@ -390,13 +456,19 @@ current command's exit code.
 Run the regression suite using your augmentation interpreter:
 
 ```powershell
-.venv-augmentation/Scripts/python.exe -m pytest data/augmentation/tests -q --basetemp=.cache/pytest
+python -m pytest data/augmentation/tests -q --basetemp=.cache/pytest
 ```
 
-Substitute the Unix interpreter path on Linux/macOS. The lock includes pytest;
+With conda, activate `melodysim-augmentation` first. For the alternative venv setup,
+use its interpreter path. The lock includes pytest;
 the direct runtime requirements do not. Model-loader boundary tests skip unless
 torch and torchaudio are also available. They are optional for augmentation; the
 [pipeline guide](augmentation.md#validation) explains their separate CPU install.
+With torch installed, run `python -m pytest -q --basetemp=.cache/pytest` to include
+the model aggregation regressions in `model/tests/` as well. Those tests exercise
+both orientations of unequal window counts, directional coverage, `min_hits`,
+and the existing strict threshold boundaries; they do not validate the historical
+MCIC pair construction or reproduce the published score.
 
 Windows x64 / CPython 3.12 is the executed release-validation platform. Linux/macOS
 instructions follow upstream installation documentation; this repository does not
