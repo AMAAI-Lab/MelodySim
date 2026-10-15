@@ -1,7 +1,7 @@
 # Paths are relative to THIS file. Replace these with your local assets.
-input_root: ../../datasets/slakh2100_flac_redux
-output_root: ../../outputs/augmentation/slakh
-soundfont: ../../assets/Musyng.sf2
+input_root: ../../../datasets/slakh2100_flac_redux
+output_root: ../../../outputs/augmentation/slakh
+soundfont: ../../../assets/Musyng.sf2
 original_mode: audio_mix
 midi_filename: all_src.mid
 audio_filename: mix.flac

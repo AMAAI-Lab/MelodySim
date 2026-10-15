@@ -1,4 +1,4 @@
-"""Run with python -m data.generate_dataset --config configs/augmentation/slakh.yaml."""
+"""Run with python -m data.generate_dataset --config data/augmentation/configs/slakh.yaml."""
 
 import argparse
 import json

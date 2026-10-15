@@ -194,4 +194,5 @@ outputs/
 datasets/
 /assets/
 .venv-*/
-configs/augmentation/*.local.yaml
+data/augmentation/configs/*.local.yaml
+data/augmentation/augmentation-demo/

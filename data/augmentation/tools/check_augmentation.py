@@ -1,6 +1,6 @@
 """Check an augmentation installation, including real synthesis and audio processing.
 
-Run from the repository root: python -m tools.check_augmentation
+Run from the repository root: python -m data.augmentation.tools.check_augmentation
 """
 
 import argparse
@@ -12,7 +12,7 @@ import struct
 import sys
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def check_dependencies():
@@ -61,7 +61,7 @@ def check_runtime(soundfont, classifier_path, output_dir):
     from data.augmentation.melody import identify_melody
     from data.augmentation.slakh import file_sha256
     from data.augmentation.synth import available_presets, backend_identity, render_midi
-    from tools.create_augmentation_demo import make_midi
+    from data.augmentation.tools.create_augmentation_demo import make_midi
 
     soundfont = validate_soundfont(soundfont)
     melodic, drums = available_presets(str(soundfont))
@@ -128,7 +128,7 @@ def main(argv=None):
         return 0
     except Exception as error:
         print(f"[FAIL] {type(error).__name__}: {error}", file=sys.stderr)
-        print("See docs/augmentation-setup.md#troubleshooting; install dependencies into the Python shown above.", file=sys.stderr)
+        print("See data/augmentation/docs/augmentation-setup.md#troubleshooting; install dependencies into the Python shown above.", file=sys.stderr)
         return 1
 
 

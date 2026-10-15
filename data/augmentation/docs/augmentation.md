@@ -20,7 +20,7 @@ version. Do not install the two requirements files together in the same environm
 ```powershell
 uv venv --python 3.12 .venv-augmentation
 uv pip sync --python .venv-augmentation/Scripts/python.exe requirements-augmentation.lock
-.venv-augmentation/Scripts/python.exe -m tools.create_augmentation_demo --run --workers 2
+.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.create_augmentation_demo --run --workers 2
 ```
 
 On Linux/macOS use `.venv-augmentation/bin/python` and install the system FluidSynth shared
@@ -35,13 +35,13 @@ It exercises the real classifier, SoundFont engine, all augmentation stages and
 WAV writer. The test SoundFont is not Musyng and these compositions are not Slakh.
 The SoundFont stays in the installed package; no copy is added to this repository.
 
-Output is under `outputs/augmentation-demo/generated`. Run the same command again
+Output is under `data/augmentation/augmentation-demo/generated`. Run the same command again
 to check and resume existing output. A demo configuration is written to
-`outputs/augmentation-demo/demo.yaml`.
+`data/augmentation/augmentation-demo/demo.yaml`.
 
 ## Use a real dataset
 
-Copy `configs/augmentation/slakh.yaml` and set `input_root`, `output_root`, and
+Copy `data/augmentation/configs/slakh.yaml` and set `input_root`, `output_root`, and
 `soundfont`. Relative paths, including CLI path overrides, are resolved against
 the configuration file's directory. Absolute paths also work. Input and output
 directories must be separate, non-nested locations.
@@ -200,7 +200,7 @@ frame, including a piece with exactly one frame.
 
 ```powershell
 uv pip install --python .venv-augmentation/Scripts/python.exe pytest
-.venv-augmentation/Scripts/python.exe -m pytest tests/augmentation -q --basetemp=.cache/pytest
+.venv-augmentation/Scripts/python.exe -m pytest data/augmentation/tests -q --basetemp=.cache/pytest
 ```
 
 Two additional model-loader boundary tests run when torch and torchaudio are

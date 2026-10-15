@@ -1,5 +1,5 @@
 # Validated CPython 3.12 package snapshot (runtime and pytest); native FluidSynth
-# and SoundFont assets are installed separately. See docs/augmentation-setup.md.
+# and SoundFont assets are installed separately. See data/augmentation/docs/augmentation-setup.md.
 # Install into a fresh environment with uv pip sync or python -m pip install -r.
 audioread==3.1.0
 certifi==2026.7.22

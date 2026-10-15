@@ -91,8 +91,8 @@ uv python install 3.12
 uv venv --python 3.12 .venv-augmentation
 uv pip sync --python .venv-augmentation/Scripts/python.exe requirements-augmentation.lock
 uv pip check --python .venv-augmentation/Scripts/python.exe
-.venv-augmentation/Scripts/python.exe -m tools.check_augmentation
-.venv-augmentation/Scripts/python.exe -m tools.create_augmentation_demo --run --workers 2
+.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.check_augmentation
+.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.create_augmentation_demo --run --workers 2
 ```
 
 ### Linux/macOS shell
@@ -109,8 +109,8 @@ uv python install 3.12
 uv venv --python 3.12 .venv-augmentation
 uv pip sync --python .venv-augmentation/bin/python requirements-augmentation.lock
 uv pip check --python .venv-augmentation/bin/python
-.venv-augmentation/bin/python -m tools.check_augmentation
-.venv-augmentation/bin/python -m tools.create_augmentation_demo --run --workers 2
+.venv-augmentation/bin/python -m data.augmentation.tools.check_augmentation
+.venv-augmentation/bin/python -m data.augmentation.tools.create_augmentation_demo --run --workers 2
 ```
 
 Environment activation is optional: these commands select the intended interpreter
@@ -149,8 +149,8 @@ py -3.12 -m venv .venv-augmentation
 .venv-augmentation/Scripts/python.exe -m pip install --upgrade pip
 .venv-augmentation/Scripts/python.exe -m pip install -r requirements-augmentation.lock
 .venv-augmentation/Scripts/python.exe -m pip check
-.venv-augmentation/Scripts/python.exe -m tools.check_augmentation
-.venv-augmentation/Scripts/python.exe -m tools.create_augmentation_demo --run --workers 2
+.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.check_augmentation
+.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.create_augmentation_demo --run --workers 2
 ```
 
 If the Python launcher `py` is unavailable, use the absolute path of your Python
@@ -164,8 +164,8 @@ python3.12 -m venv .venv-augmentation
 .venv-augmentation/bin/python -m pip install --upgrade pip
 .venv-augmentation/bin/python -m pip install -r requirements-augmentation.lock
 .venv-augmentation/bin/python -m pip check
-.venv-augmentation/bin/python -m tools.check_augmentation
-.venv-augmentation/bin/python -m tools.create_augmentation_demo --run --workers 2
+.venv-augmentation/bin/python -m data.augmentation.tools.check_augmentation
+.venv-augmentation/bin/python -m data.augmentation.tools.create_augmentation_demo --run --workers 2
 ```
 
 Use a fresh environment: `pip install -r` does not remove conflicting extra packages
@@ -180,7 +180,7 @@ No external SoundFont download or Slakh data is required for this first run.
 The small SoundFont is for functional validation; it does not reproduce Musyng's
 timbre or the paper's dataset.
 
-`tools.check_augmentation` exits with code 0 only after checking Python/package
+`data.augmentation.tools.check_augmentation` exits with code 0 only after checking Python/package
 versions, loading the classifier, enumerating all 128 GM melodic programs and the
 standard drum kit, synthesizing MIDI, applying pitch/time/tempo changes, and
 round-tripping non-silent WAV/FLAC audio. It prints `[OK]` lines, the native
@@ -205,7 +205,7 @@ the original plus three augmented versions of each. Expect **24 MIDI files and
 `transformations.json` under each source:
 
 ```text
-outputs/augmentation-demo/
+data/augmentation/augmentation-demo/
   demo.yaml
   source/
   generated/
@@ -281,14 +281,14 @@ demo; the pipeline cannot load an unextracted SFPACK archive. A MIDI.js
 PowerShell:
 
 ```powershell
-.venv-augmentation/Scripts/python.exe -m tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
+.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
 Get-FileHash -Algorithm SHA256 -LiteralPath assets/Musyng_Kite.sf2
 ```
 
 Linux/macOS:
 
 ```sh
-.venv-augmentation/bin/python -m tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
+.venv-augmentation/bin/python -m data.augmentation.tools.check_augmentation --soundfont assets/Musyng_Kite.sf2 --output-dir outputs/musyng-check
 ```
 
 The report records SHA-256, preset coverage and the real synthesis result. Copy
@@ -302,13 +302,13 @@ SoundFont or SFPACK executable is distributed in this repository.
 
 ## 6. Run your dataset
 
-Copy the template to `configs/augmentation/slakh.local.yaml` (ignored by Git), then
+Copy the template to `data/augmentation/configs/slakh.local.yaml` (ignored by Git), then
 edit its paths. Keep the copy in the same directory for these relative paths:
 
 ```yaml
-input_root: ../../datasets/slakh2100_flac_redux
-output_root: ../../outputs/augmentation/slakh-kite
-soundfont: ../../assets/Musyng_Kite.sf2
+input_root: ../../../datasets/slakh2100_flac_redux
+output_root: ../../../outputs/augmentation/slakh-kite
+soundfont: ../../../assets/Musyng_Kite.sf2
 original_mode: audio_mix
 ```
 
@@ -338,10 +338,10 @@ intended split). In `audio_mix` mode, flat MIDI files need sibling `<stem>.wav`.
 PowerShell, after saving your local YAML:
 
 ```powershell
-.venv-augmentation/Scripts/python.exe -m tools.check_augmentation --config configs/augmentation/slakh.local.yaml
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config configs/augmentation/slakh.local.yaml --dry-run
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config configs/augmentation/slakh.local.yaml --limit 1 --workers 1
-.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config configs/augmentation/slakh.local.yaml --workers 2
+.venv-augmentation/Scripts/python.exe -m data.augmentation.tools.check_augmentation --config data/augmentation/configs/slakh.local.yaml
+.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --dry-run
+.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --limit 1 --workers 1
+.venv-augmentation/Scripts/python.exe -m data.generate_dataset --config data/augmentation/configs/slakh.local.yaml --workers 2
 ```
 
 Linux/macOS: use `.venv-augmentation/bin/python` in the same commands. `--dry-run`
@@ -361,7 +361,7 @@ policies, replay, output layout, MERT integration and differences from the paper
 | `No module named pip` in a uv environment | Use `uv pip ... --python <env-python>` directly. To switch to pip, run `<env-python> -m ensurepip --upgrade` first. |
 | `ensurepip` / `venv` unavailable on Ubuntu | Install `python3.12-venv` for that interpreter, or use uv-managed Python. |
 | `externally-managed-environment` | Create the dedicated virtual environment and invoke its Python. Do not install this stack into the OS Python. |
-| `No module named data` / `tools` | Change directory to the repository root; use `python -m data.generate_dataset` and `python -m tools.check_augmentation`, not a direct script path. |
+| `No module named data` | Change directory to the repository root; use `python -m data.generate_dataset` and `python -m data.augmentation.tools.check_augmentation`, not a direct script path. |
 | `audioop` / `pyaudioop` missing, or unsupported Python message | Use CPython 3.12. The pinned pydub stack relies on audioop, which was removed from Python 3.13. |
 | `pkg_resources` missing | Reinstall the locked dependencies; pretty_midi 0.2.10 needs `setuptools<81`. Its deprecation warning alone does not prevent a successful check. |
 | scikit-learn version warning, pickle load failure, wrong classifier features | Use the dedicated environment with scikit-learn 1.5.2 and the repository classifier. Do not mix the training requirements into it. Verify `classifier_model.pkl` exists with the SHA-256 recorded in the adjacent JSON. |
@@ -390,7 +390,7 @@ current command's exit code.
 Run the regression suite using your augmentation interpreter:
 
 ```powershell
-.venv-augmentation/Scripts/python.exe -m pytest tests/augmentation -q --basetemp=.cache/pytest
+.venv-augmentation/Scripts/python.exe -m pytest data/augmentation/tests -q --basetemp=.cache/pytest
 ```
 
 Substitute the Unix interpreter path on Linux/macOS. The lock includes pytest;

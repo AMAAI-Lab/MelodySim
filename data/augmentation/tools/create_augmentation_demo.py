@@ -1,7 +1,7 @@
 """Create original toy compositions and use pretty_midi's bundled test SoundFont.
 
 This is a functional demonstration, not a substitute for Slakh or Musyng.
-Run: python -m tools.create_augmentation_demo --run
+Run: python -m data.augmentation.tools.create_augmentation_demo --run
 """
 
 import argparse
@@ -55,7 +55,7 @@ def create_demo(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", default="outputs/augmentation-demo")
+    parser.add_argument("--root", default=str(Path(__file__).resolve().parents[1] / "augmentation-demo"))
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--workers", type=int, default=1)
     args = parser.parse_args()

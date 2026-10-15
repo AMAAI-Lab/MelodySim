@@ -12,7 +12,7 @@ from data.augmentation.manifest import verify_track
 from data.augmentation.pipeline import generate_dataset, output_lock
 from data.augmentation.slakh import discover_tracks
 from data.augmentation.synth import render_midi
-from tools.create_augmentation_demo import make_midi
+from data.augmentation.tools.create_augmentation_demo import make_midi
 
 
 def _audio_hashes(root):

@@ -4,7 +4,7 @@ import pretty_midi
 import pytest
 
 from data.augmentation.config import GenerationConfig
-from tools.create_augmentation_demo import make_midi
+from data.augmentation.tools.create_augmentation_demo import make_midi
 
 
 @pytest.fixture
