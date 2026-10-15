@@ -21,6 +21,7 @@ from config import config
 from data.dataloader import MelodySimDataset, MelodysimMERTDataset, create_audio_dataloader
 from data.extract_mert import run_mert_model_and_get_features
 from model.module import LightningSiameseNet
+from model.aggregation import aggregate_decision_matrix
 
 def window_slide(seq:torch.Tensor, window_len:int, hop_len:int):
     assert len(seq.shape) == 1
@@ -128,27 +129,6 @@ def inference_two_pieces(
         piece1_windowed, piece2_windowed,
         batch_size=batch_size
     )
-
-def aggregate_decision_matrix(
-    similarity_matrix, 
-    proportion_thres:float = 0.2, 
-    decision_thres:float = 0.5,
-    min_hits: int = 1,
-    # max_hits_proportion: float = 0.8,
-):
-    decision_matrix = similarity_matrix > decision_thres
-    assert len(decision_matrix.shape) == 2
-    N1, N2 = decision_matrix.shape
-    row_sum = decision_matrix.sum(dim=0) # for each window in piece 1, how many segments in piece 2 are similar to that seg
-    col_sum = decision_matrix.sum(dim=1) # for each window in piece 2, how many segments in piece 1 are similar to that seg
-    # row_sum[row_sum > max_hits_proportion * N2] = 0
-    # col_sum[col_sum > max_hits_proportion * N1] = 0
-    plagiarized_pieces1 = row_sum >= min_hits
-    plagiarized_pieces2 = col_sum >= min_hits
-    if plagiarized_pieces1.sum() > proportion_thres * N1 and plagiarized_pieces2.sum() > proportion_thres * N2:
-        return 1, decision_matrix
-    else:
-        return 0, decision_matrix
 
 def draft_without_replacement(elements: List, n):
     L = len(elements)
